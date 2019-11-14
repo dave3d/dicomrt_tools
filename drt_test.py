@@ -8,7 +8,7 @@ if (len(sys.argv) > 1):
   infiles = sys.argv[1:]
 else:
   # my test file
-  infile = ["1041312_StrctrSets.dcm"]
+  infiles = ["1041312_StrctrSets.dcm"]
 
 print(infiles)
 
