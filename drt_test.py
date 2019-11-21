@@ -12,6 +12,7 @@ else:
 
 print(infiles)
 
+
 for infile in infiles:
   print(infile)
 
@@ -32,7 +33,14 @@ for infile in infiles:
     print ("ROI name:", r.ROIName)
     print("# of contours:", len(c.ContourSequence))
 
-    out = drt.outputContourSequence(ds, i)
-    print(out)
+    outname = r.ROIName.replace(' ', '_') + ".lns"
+    outfile = open(outname, "w")
+    print(outname)
+
+    out = drt.outputContourSequenceByROINum(ds, i)
+    #print(out)
+    for x in out:
+      print(x, file=outfile)
     i=i+1
 
+    outfile.close()
