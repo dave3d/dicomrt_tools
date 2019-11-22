@@ -20,6 +20,37 @@ def findROIByName(ds, name):
             return r
     return None
 
+
+def contourSequence2VTK(cs=None, name="", color=[]):
+    """ output a VTK polyline file from a contour sequence """
+    out = ['# vtk DataFile Version 1.0']
+    out.append('contour sequence %s' % name)
+    out.append('ASCII')
+    out.append('DATASET POLYDATA')
+
+    count = 0
+    starts = []
+    ncs = 0
+    # Count up all the points in all the contours
+    for c in cs.ContourSequence:
+      starts.append(count/3)
+      count = count + len(c.ContourData)
+      ncs = ncs + 1
+
+    npts = count/3
+
+    out.append('POINTS %d float' % int(npts))
+
+    # Output all the points in all the contours
+    for c in cs.ContourSequence:
+        i = 0
+        n = len(c.ContourData)
+        for i in range(0,n,3):
+          out.append("%g %g %g" % (c.ContourData[i], c.ContourData[i+1], c.ContourData[i+2]))
+
+    return out
+
+
 def outputContourSequenceByROINum(ds, seqnum):
     """ output a contour in Dave's .lns format """
     ctrs = ds.ROIContourSequence
