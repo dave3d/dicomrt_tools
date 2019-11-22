@@ -13,10 +13,7 @@ else:
 print(infiles)
 
 
-for infile in infiles:
-  print(infile)
-
-  ds = pydicom.read_file(infile, force=True)
+def OutputAllContoursAsLines(ds):
 
   contours = ds.ROIContourSequence
   print (len(contours), "contours")
@@ -44,3 +41,42 @@ for infile in infiles:
     i=i+1
 
     outfile.close()
+
+
+def OutputAllContoursAsVTK(ds):
+  contours = ds.ROIContourSequence
+  print (len(contours), "contours")
+  print(dir(contours[0]))
+
+  i = 0
+
+  for c in contours:
+    print ()
+    print("Contour Sequence:", i)
+    print("color:", c.ROIDisplayColor)
+    print ("ROI number:", c.ReferencedROINumber)
+    r = drt.findROIByNumber(ds, c.ReferencedROINumber)
+    print ("ROI name:", r.ROIName)
+    print("# of contours:", len(c.ContourSequence))
+
+    outname = r.ROIName.replace(' ', '_') + ".vtk"
+#    outfile = open(outname, "w")
+    print(outname)
+
+    out = drt.contourSequence2VTK(c, r.ROIName, c.ROIDisplayColor)
+    #print(out)
+    for x in out:
+      #print(x, file=outfile)
+      print(x)
+    i=i+1
+
+#    outfile.close()
+
+
+for infile in infiles:
+  print(infile)
+
+  ds = pydicom.read_file(infile, force=True)
+
+#  OutputAllContoursAsLines(ds)
+  OutputAllContoursAsVTK(ds)
