@@ -28,7 +28,7 @@ def outputContourSequenceByROINum(ds, seqnum):
     out=[''] #lead with a blank line
     color = seq.ROIDisplayColor
     out.append( "#color: %d %d %d" % (color[0], color[1], color[2]) )
-    out.append( "#name: \`%s\`" % (roi.ROIName) )
+    out.append( "#name: \'%s\'" % (roi.ROIName) )
 
     for c in seq.ContourSequence:
       n = len(c.ContourData)
