@@ -28,16 +28,19 @@ def contourSequence2VTK(cs=None, name="", color=[]):
     out.append('ASCII')
     out.append('DATASET POLYDATA')
 
+    nlines = len(cs.ContourSequence)
+
     count = 0
     starts = []
     ncs = 0
     # Count up all the points in all the contours
     for c in cs.ContourSequence:
-      starts.append(count/3)
+      starts.append(int(count/3))
       count = count + len(c.ContourData)
       ncs = ncs + 1
 
     npts = count/3
+    #print(starts)
 
     out.append('POINTS %d float' % int(npts))
 
@@ -48,6 +51,24 @@ def contourSequence2VTK(cs=None, name="", color=[]):
         for i in range(0,n,3):
           out.append("%g %g %g" % (c.ContourData[i], c.ContourData[i+1], c.ContourData[i+2]))
 
+    line_size = npts + 2*nlines
+    out.append('')
+
+    out.append('LINES %d %d' % (nlines, line_size))
+
+    i = 0
+    for c in cs.ContourSequence:
+      n = int(len(c.ContourData)/3)
+      # number of vertices in the contour
+      out.append(str(n+1))
+      verts = ""
+      for j in range(n):
+        verts = verts + " " + str(j+starts[i])
+      # close the contour by repeating the first vertex
+      verts = verts + " " + str(starts[i])
+      out.append(verts)
+
+      i=i+1
     return out
 
 
