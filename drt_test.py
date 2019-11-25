@@ -12,8 +12,9 @@ else:
 
 print(infiles)
 
+contour_names = {"25 Gy LI"}
 
-def OutputAllContoursAsLines(ds):
+def OutputContoursAsLines(ds, contour_names):
 
   contours = ds.ROIContourSequence
   print (len(contours), "contours")
@@ -22,11 +23,13 @@ def OutputAllContoursAsLines(ds):
   i = 0
 
   for c in contours:
+    r = drt.findROIByNumber(ds, c.ReferencedROINumber)
+    if len(contour_names) and not(r.ROIName in contour_names):
+      continue
     print ()
     print("Contour Sequence:", i)
     print("color:", c.ROIDisplayColor)
     print ("ROI number:", c.ReferencedROINumber)
-    r = drt.findROIByNumber(ds, c.ReferencedROINumber)
     print ("ROI name:", r.ROIName)
     print("# of contours:", len(c.ContourSequence))
 
@@ -43,34 +46,37 @@ def OutputAllContoursAsLines(ds):
     outfile.close()
 
 
-def OutputAllContoursAsVTK(ds):
+def OutputContoursAsVTK(ds, contour_names):
   contours = ds.ROIContourSequence
   print (len(contours), "contours")
   print(dir(contours[0]))
 
   i = 0
+  print (contour_names)
 
   for c in contours:
+    r = drt.findROIByNumber(ds, c.ReferencedROINumber)
+    if len(contour_names) and not(r.ROIName in contour_names):
+      print ("ROI name:", r.ROIName)
+      continue
     print ()
     print("Contour Sequence:", i)
     print("color:", c.ROIDisplayColor)
     print ("ROI number:", c.ReferencedROINumber)
-    r = drt.findROIByNumber(ds, c.ReferencedROINumber)
     print ("ROI name:", r.ROIName)
     print("# of contours:", len(c.ContourSequence))
 
     outname = r.ROIName.replace(' ', '_') + ".vtk"
-#    outfile = open(outname, "w")
+    outfile = open(outname, "w")
     print(outname)
 
     out = drt.contourSequence2VTK(c, r.ROIName, c.ROIDisplayColor)
     #print(out)
     for x in out:
-      #print(x, file=outfile)
-      print(x)
+      print(x, file=outfile)
     i=i+1
 
-#    outfile.close()
+    outfile.close()
 
 
 for infile in infiles:
@@ -78,5 +84,5 @@ for infile in infiles:
 
   ds = pydicom.read_file(infile, force=True)
 
-#  OutputAllContoursAsLines(ds)
-  OutputAllContoursAsVTK(ds)
+#  OutputContoursAsLines(ds, contour_names)
+  OutputContoursAsVTK(ds, contour_names)
