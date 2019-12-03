@@ -78,9 +78,12 @@ def outputContourSequenceByROINum(ds, seqnum):
     seq = ctrs[seqnum]
     roi = findROIByNumber(ds, seq.ReferencedROINumber)
     out=[''] #lead with a blank line
+
+    # convert 0-255 colors to 0-1.0
     color = seq.ROIDisplayColor
-    out.append( "#color: %d %d %d" % (color[0], color[1], color[2]) )
-    out.append( "#name: \'%s\'" % (roi.ROIName) )
+    scale = 1.0/255.0
+    out.append( "#color: %g %g %g" % (scale*color[0], scale*color[1], scale*color[2]) )
+    out.append( "#name: %s" % (roi.ROIName) )
 
     for c in seq.ContourSequence:
       n = len(c.ContourData)
