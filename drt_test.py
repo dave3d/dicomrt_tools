@@ -25,6 +25,8 @@ def OutputContoursAsLines(ds, contour_names):
   for c in contours:
     r = drt.findROIByNumber(ds, c.ReferencedROINumber)
     if len(contour_names) and not(r.ROIName in contour_names):
+      print ("Skipping ", r.ROIName)
+      i=i+1
       continue
     print ()
     print("Contour Sequence:", i)
@@ -84,5 +86,5 @@ for infile in infiles:
 
   ds = pydicom.read_file(infile, force=True)
 
-#  OutputContoursAsLines(ds, contour_names)
-  OutputContoursAsVTK(ds, contour_names)
+  OutputContoursAsLines(ds, contour_names)
+#  OutputContoursAsVTK(ds, contour_names)
