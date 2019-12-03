@@ -1,18 +1,13 @@
 #! /usr/bin/env python
 
-import sys
+import sys, getopt
 import pydicom
 import dicomrt_tools as drt
 
-if (len(sys.argv) > 1):
-  infiles = sys.argv[1:]
-else:
-  # my test file
-  infiles = ["1041312_StrctrSets.dcm"]
 
-print(infiles)
-
-contour_names = {"25 Gy LI"}
+infiles = []
+contour_names = []
+output_type = 'line'
 
 def OutputContoursAsLines(ds, contour_names):
 
@@ -80,11 +75,71 @@ def OutputContoursAsVTK(ds, contour_names):
 
     outfile.close()
 
+def usage():
+  print ( )
+  print ( "Usage: drt_convert [options] input_dicom_rt_file" )
+  print ( )
+  print ( "   -h, --help     This help message" )
+  print ( "   -l, --line     Output line files" )
+  print ( "   -v, --vtk      Output VTK polyline files" )
+  print ( "   -m, --meta     Output MetaIO volume images" )
+  print ( )
 
-for infile in infiles:
-  print(infile)
 
-  ds = pydicom.read_file(infile, force=True)
 
-  OutputContoursAsLines(ds, contour_names)
-#  OutputContoursAsVTK(ds, contour_names)
+def parseArgs():
+  try:
+    opts, args = getopt.getopt(sys.argv[1:], "hlvmc:",
+      ["help", "line", "vtk", "meta", "contour="] )
+  except getopt.GetoptError as err:
+    print(str(err))
+    usage()
+    sys.exit(1)
+
+  for o, a in opts:
+    if o in ("-h", "--help"):
+      usage()
+      sys.exit(0)
+    elif o in ("-l", "--line"):
+      output_type = 'line'
+    elif o in ("-v", "--vtk"):
+      output_type = 'vtk'
+    elif o in ("-m", "--meta"):
+      print("Meta!")
+      output_type = 'meta'
+    elif o in ("-c", "--contour"):
+      contour_names.append(a)
+    else:
+      assert False, "unhandled options"
+
+  print(args)
+  return args
+
+
+
+def main():
+  infiles = parseArgs()
+  if len(infiles) == 0:
+    infiles = ["1041312_StrctrSets.dcm"]
+  print (infiles)
+  for infile in infiles:
+    print(infile)
+
+    ds = pydicom.read_file(infile, force=True)
+    print("output type:", output_type)
+
+    if output_type == 'line':
+      print("output type: line")
+      OutputContoursAsLines(ds, contour_names)
+    elif output_type == 'vtk':
+      print("output type: vtk")
+      OutputContoursAsVTK(ds, contour_names)
+      print("output type: meta")
+    elif output_type == 'meta':
+      print("Not yet implemented, Dude")
+
+
+
+if __name__ == "__main__":
+
+  main()
