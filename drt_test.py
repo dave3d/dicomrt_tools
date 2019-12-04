@@ -5,10 +5,6 @@ import pydicom
 import dicomrt_tools as drt
 
 
-infiles = []
-contour_names = []
-output_type = 'line'
-
 def OutputContoursAsLines(ds, contour_names):
 
   contours = ds.ROIContourSequence
@@ -75,11 +71,15 @@ def OutputContoursAsVTK(ds, contour_names):
 
     outfile.close()
 
+def OutputContoursAsMetaIO(ds, contour_names):
+  print( "This don't do nuttin' yet")
+
 def usage():
   print ( )
   print ( "Usage: drt_convert [options] input_dicom_rt_file" )
   print ( )
   print ( "   -h, --help     This help message" )
+  print ( "   -V, --verbose  Verbose messages" )
   print ( "   -l, --line     Output line files" )
   print ( "   -v, --vtk      Output VTK polyline files" )
   print ( "   -m, --meta     Output MetaIO volume images" )
@@ -88,9 +88,14 @@ def usage():
 
 
 def parseArgs():
+
+  settings = {}
+  cn = []
+  settings['contour_names'] = cn
+
   try:
-    opts, args = getopt.getopt(sys.argv[1:], "hlvmc:",
-      ["help", "line", "vtk", "meta", "contour="] )
+    opts, args = getopt.getopt(sys.argv[1:], "hVlvmc:",
+      ["help", "verbose", "line", "vtk", "meta", "contour="] )
   except getopt.GetoptError as err:
     print(str(err))
     usage()
@@ -100,25 +105,36 @@ def parseArgs():
     if o in ("-h", "--help"):
       usage()
       sys.exit(0)
+    elif o in ("-V", "--verbose"):
+      settings['verbose'] = True
     elif o in ("-l", "--line"):
       output_type = 'line'
+      settings['output_type'] = 'line'
     elif o in ("-v", "--vtk"):
       output_type = 'vtk'
+      settings['output_type'] = 'vtk'
     elif o in ("-m", "--meta"):
       print("Meta!")
+      settings['output_type'] = 'meta'
       output_type = 'meta'
     elif o in ("-c", "--contour"):
-      contour_names.append(a)
+      cn.append(a)
     else:
       assert False, "unhandled options"
 
   print(args)
-  return args
+  print(settings)
+  return args, settings
 
 
 
 def main():
-  infiles = parseArgs()
+
+  infiles, settings = parseArgs()
+
+  output_type = settings['output_type']
+  contour_names = settings['contour_names']
+
   if len(infiles) == 0:
     infiles = ["1041312_StrctrSets.dcm"]
   print (infiles)
@@ -129,14 +145,11 @@ def main():
     print("output type:", output_type)
 
     if output_type == 'line':
-      print("output type: line")
       OutputContoursAsLines(ds, contour_names)
     elif output_type == 'vtk':
-      print("output type: vtk")
       OutputContoursAsVTK(ds, contour_names)
-      print("output type: meta")
     elif output_type == 'meta':
-      print("Not yet implemented, Dude")
+      OutputContoursAsMetaIO(ds, contour_names)
 
 
 
