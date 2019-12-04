@@ -132,7 +132,10 @@ def main():
 
   infiles, settings = parseArgs()
 
-  output_type = settings['output_type']
+  if 'output_type' in settings:
+    output_type = settings['output_type']
+  else:
+    output_type = 'line'
   contour_names = settings['contour_names']
 
   if len(infiles) == 0:
