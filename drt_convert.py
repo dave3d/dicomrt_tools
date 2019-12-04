@@ -5,7 +5,7 @@ import pydicom
 import dicomrt_tools as drt
 
 
-def OutputContoursAsLines(ds, contour_names):
+def OutputContoursAsLines(ds, contour_names=[], verbose=False):
 
   contours = ds.ROIContourSequence
   print (len(contours), "contours")
@@ -16,7 +16,8 @@ def OutputContoursAsLines(ds, contour_names):
   for c in contours:
     r = drt.findROIByNumber(ds, c.ReferencedROINumber)
     if len(contour_names) and not(r.ROIName in contour_names):
-      print ("Skipping ", r.ROIName)
+      if verbose:
+        print ("Skipping ", r.ROIName)
       i=i+1
       continue
     print ()
@@ -39,7 +40,7 @@ def OutputContoursAsLines(ds, contour_names):
     outfile.close()
 
 
-def OutputContoursAsVTK(ds, contour_names):
+def OutputContoursAsVTK(ds, contour_names=[], verbose=False):
   contours = ds.ROIContourSequence
   print (len(contours), "contours")
   print(dir(contours[0]))
@@ -50,7 +51,9 @@ def OutputContoursAsVTK(ds, contour_names):
   for c in contours:
     r = drt.findROIByNumber(ds, c.ReferencedROINumber)
     if len(contour_names) and not(r.ROIName in contour_names):
-      print ("ROI name:", r.ROIName)
+      if verbose:
+        print ("Skipping ", r.ROIName)
+      i=i+1
       continue
     print ()
     print("Contour Sequence:", i)
@@ -71,8 +74,10 @@ def OutputContoursAsVTK(ds, contour_names):
 
     outfile.close()
 
-def OutputContoursAsMetaIO(ds, contour_names):
+
+def OutputContoursAsMetaIO(ds, contour_names=[], verbose=False):
   print( "This don't do nuttin' yet")
+
 
 def usage():
   print ( )
@@ -92,6 +97,8 @@ def parseArgs():
   settings = {}
   cn = []
   settings['contour_names'] = cn
+  settings['verbose'] = False
+  settings['output_type'] = 'line'
 
   try:
     opts, args = getopt.getopt(sys.argv[1:], "hVlvmc:",
@@ -132,10 +139,7 @@ def main():
 
   infiles, settings = parseArgs()
 
-  if 'output_type' in settings:
-    output_type = settings['output_type']
-  else:
-    output_type = 'line'
+  output_type = settings['output_type']
   contour_names = settings['contour_names']
 
   if len(infiles) == 0:
@@ -148,11 +152,11 @@ def main():
     print("output type:", output_type)
 
     if output_type == 'line':
-      OutputContoursAsLines(ds, contour_names)
+      OutputContoursAsLines(ds, contour_names, settings['verbose'])
     elif output_type == 'vtk':
-      OutputContoursAsVTK(ds, contour_names)
+      OutputContoursAsVTK(ds, contour_names, settings['verbose'])
     elif output_type == 'meta':
-      OutputContoursAsMetaIO(ds, contour_names)
+      OutputContoursAsMetaIO(ds, contour_names, settings['verbose'])
 
 
 
