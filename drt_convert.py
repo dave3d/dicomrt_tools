@@ -2,7 +2,7 @@
 
 import sys, getopt
 import pydicom
-import dicomrt_tools as drt
+from drt2lines import *
 
 
 def OutputContours(ds, output_type='line', contour_names=[], verbose=False):
@@ -13,7 +13,7 @@ def OutputContours(ds, output_type='line', contour_names=[], verbose=False):
   i = 0
 
   for cs in contour_sequences:
-    r = drt.findROIByNumber(ds, cs.ReferencedROINumber)
+    r = findROIByNumber(ds, cs.ReferencedROINumber)
     if len(contour_names) and not(r.ROIName in contour_names):
       if verbose:
         print ("Skipping ", r.ROIName)
@@ -28,10 +28,10 @@ def OutputContours(ds, output_type='line', contour_names=[], verbose=False):
 
     if output_type == 'line':
       outname = r.ROIName.replace(' ', '_') + ".lns"
-      out = drt.contourSequence2LNS(cs, r.ROIName, cs.ROIDisplayColor)
+      out = contourSequence2LNS(cs, r.ROIName, cs.ROIDisplayColor)
     elif output_type == 'vtk':
       outname = r.ROIName.replace(' ', '_') + ".vtk"
-      out = drt.contourSequence2VTK(cs, r.ROIName, cs.ROIDisplayColor)
+      out = contourSequence2VTK(cs, r.ROIName, cs.ROIDisplayColor)
 
     print(outname)
     outfile = open(outname, "w")
