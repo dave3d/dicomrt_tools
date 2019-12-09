@@ -3,6 +3,7 @@
 import sys, getopt
 import pydicom
 from drt2lines import *
+from drt2image import *
 
 
 def OutputContours(ds, output_type='line', contour_names=[], verbose=False):
@@ -43,8 +44,27 @@ def OutputContours(ds, output_type='line', contour_names=[], verbose=False):
     outfile.close()
 
 
-def OutputContoursAsMetaIO(ds, contour_names=[], verbose=False):
-  print( "This don't do nuttin' yet")
+def OutputContoursAsImages(ds, contour_names=[], verbose=False):
+  contour_sequences = ds.ROIContourSequence
+  print (len(contour_sequences), "contour sequences")
+
+  i = 0
+
+  for cs in contour_sequences:
+    r = findROIByNumber(ds, cs.ReferencedROINumber)
+    if len(contour_names) and not(r.ROIName in contour_names):
+      if verbose:
+        print ("Skipping ", r.ROIName)
+      i=i+1
+      continue
+    print ()
+    print("Contour Sequence:", i)
+    print("color:", cs.ROIDisplayColor)
+    print ("ROI number:", cs.ReferencedROINumber)
+    print ("ROI name:", r.ROIName)
+    print("# of contours:", len(cs.ContourSequence))
+
+    contourSequence2Image(cs, 'meta', r.ROIName)
 
 
 def usage():
@@ -121,7 +141,7 @@ def main():
     print("output type:", output_type)
 
     if output_type == 'meta':
-      OutputContoursAsMetaIO(ds, contour_names, settings['verbose'])
+      OutputContoursAsImages(ds, contour_names, settings['verbose'])
     else:
       OutputContours(ds, output_type, contour_names, settings['verbose'])
 
