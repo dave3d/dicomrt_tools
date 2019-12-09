@@ -28,10 +28,10 @@ def OutputContours(ds, output_type='line', contour_names=[], verbose=False):
 
     if output_type == 'line':
       outname = r.ROIName.replace(' ', '_') + ".lns"
-      out = drt.outputContourSequenceByROINum(ds, i)
+      out = drt.contourSequence2LNS(cs, r.ROIName, cs.ROIDisplayColor)
     elif output_type == 'vtk':
       outname = r.ROIName.replace(' ', '_') + ".vtk"
-      out = drt.contourSequence2VTK(c, r.ROIName, c.ROIDisplayColor)
+      out = drt.contourSequence2VTK(cs, r.ROIName, cs.ROIDisplayColor)
 
     print(outname)
     outfile = open(outname, "w")

@@ -72,20 +72,16 @@ def contourSequence2VTK(cs=None, name="", color=[]):
     return out
 
 
-def outputContourSequenceByROINum(ds, seqnum):
+def contourSequence2LNS(cs=None, name="", color=[]):
     """ output a contour in Dave's .lns format """
-    ctrs = ds.ROIContourSequence
-    seq = ctrs[seqnum]
-    roi = findROIByNumber(ds, seq.ReferencedROINumber)
     out=[''] #lead with a blank line
 
     # convert 0-255 colors to 0-1.0
-    color = seq.ROIDisplayColor
     scale = 1.0/255.0
     out.append( "#color: %g %g %g" % (scale*color[0], scale*color[1], scale*color[2]) )
-    out.append( "#name: %s" % (roi.ROIName) )
+    out.append( "#name: %s" % (name) )
 
-    for c in seq.ContourSequence:
+    for c in cs.ContourSequence:
       n = len(c.ContourData)
       i = 0
       for i in range(0,n,3):
@@ -97,19 +93,3 @@ def outputContourSequenceByROINum(ds, seqnum):
 
     return out
 
-def outputContourSequenceByName(ds, name):
-    """ find the contour by name, then call outputContourSequenceByROINum """
-    ctrs = ds.ROIContourSequence
-    seqnum = -1
-    i = 0
-    for seq in ctrs:
-      roi = findROIByNumber(ds, seq.ReferencedROINumber)
-      if roi.Name == name:
-        seqnum = i
-        break
-      i = i+1
-
-    if seqnum>=0:
-      return outputContourSequenceByROINum(ds, seqnum)
-    else:
-      return []
