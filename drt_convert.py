@@ -5,16 +5,15 @@ import pydicom
 import dicomrt_tools as drt
 
 
-def OutputContoursAsLines(ds, contour_names=[], verbose=False):
+def OutputContours(ds, output_type='line', contour_names=[], verbose=False):
 
-  contours = ds.ROIContourSequence
-  print (len(contours), "contours")
-  print(dir(contours[0]))
+  contour_sequences = ds.ROIContourSequence
+  print (len(contour_sequences), "contour sequences")
 
   i = 0
 
-  for c in contours:
-    r = drt.findROIByNumber(ds, c.ReferencedROINumber)
+  for cs in contour_sequences:
+    r = drt.findROIByNumber(ds, cs.ReferencedROINumber)
     if len(contour_names) and not(r.ROIName in contour_names):
       if verbose:
         print ("Skipping ", r.ROIName)
@@ -22,51 +21,20 @@ def OutputContoursAsLines(ds, contour_names=[], verbose=False):
       continue
     print ()
     print("Contour Sequence:", i)
-    print("color:", c.ROIDisplayColor)
-    print ("ROI number:", c.ReferencedROINumber)
+    print("color:", cs.ROIDisplayColor)
+    print ("ROI number:", cs.ReferencedROINumber)
     print ("ROI name:", r.ROIName)
-    print("# of contours:", len(c.ContourSequence))
+    print("# of contours:", len(cs.ContourSequence))
 
-    outname = r.ROIName.replace(' ', '_') + ".lns"
-    outfile = open(outname, "w")
+    if output_type == 'line':
+      outname = r.ROIName.replace(' ', '_') + ".lns"
+      out = drt.outputContourSequenceByROINum(ds, i)
+    elif output_type == 'vtk':
+      outname = r.ROIName.replace(' ', '_') + ".vtk"
+      out = drt.contourSequence2VTK(c, r.ROIName, c.ROIDisplayColor)
+
     print(outname)
-
-    out = drt.outputContourSequenceByROINum(ds, i)
-    #print(out)
-    for x in out:
-      print(x, file=outfile)
-    i=i+1
-
-    outfile.close()
-
-
-def OutputContoursAsVTK(ds, contour_names=[], verbose=False):
-  contours = ds.ROIContourSequence
-  print (len(contours), "contours")
-  print(dir(contours[0]))
-
-  i = 0
-  print (contour_names)
-
-  for c in contours:
-    r = drt.findROIByNumber(ds, c.ReferencedROINumber)
-    if len(contour_names) and not(r.ROIName in contour_names):
-      if verbose:
-        print ("Skipping ", r.ROIName)
-      i=i+1
-      continue
-    print ()
-    print("Contour Sequence:", i)
-    print("color:", c.ROIDisplayColor)
-    print ("ROI number:", c.ReferencedROINumber)
-    print ("ROI name:", r.ROIName)
-    print("# of contours:", len(c.ContourSequence))
-
-    outname = r.ROIName.replace(' ', '_') + ".vtk"
     outfile = open(outname, "w")
-    print(outname)
-
-    out = drt.contourSequence2VTK(c, r.ROIName, c.ROIDisplayColor)
     #print(out)
     for x in out:
       print(x, file=outfile)
@@ -88,6 +56,7 @@ def usage():
   print ( "   -l, --line     Output line files" )
   print ( "   -v, --vtk      Output VTK polyline files" )
   print ( "   -m, --meta     Output MetaIO volume images" )
+  print ( "   -c name, --contour name     Select contour by name (multiple names allowed)" )
   print ( )
 
 
@@ -151,12 +120,10 @@ def main():
     ds = pydicom.read_file(infile, force=True)
     print("output type:", output_type)
 
-    if output_type == 'line':
-      OutputContoursAsLines(ds, contour_names, settings['verbose'])
-    elif output_type == 'vtk':
-      OutputContoursAsVTK(ds, contour_names, settings['verbose'])
-    elif output_type == 'meta':
+    if output_type == 'meta':
       OutputContoursAsMetaIO(ds, contour_names, settings['verbose'])
+    else:
+      OutputContours(ds, output_type, contour_names, settings['verbose'])
 
 
 
