@@ -15,7 +15,7 @@ def contourSequence2PolyData(cs):
     print ("Error: VTK package not found")
     return
 
-  npts, nlines, start = drt2lines.getContourSequenceData(cs)
+  npts, nlines, starts = drt2lines.getContourSequenceData(cs)
 
   points = vtk.vtkPoints()
 
