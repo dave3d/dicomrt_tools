@@ -4,6 +4,7 @@ import sys, getopt
 import pydicom
 from drt2lines import *
 from drt2image import *
+from vtkview import *
 
 
 def OutputContours(ds, output_type='line', contour_names=[], verbose=False):
@@ -72,6 +73,29 @@ def OutputContoursAsImages(ds, contour_names=[], verbose=False):
 
     contourSequence2Image(cs, 'meta', r.ROIName)
 
+def displayContours(ds, contour_names=[]):
+  contour_sequences = ds.ROIContourSequence
+  print (len(contour_sequences), "contour sequences")
+
+  i = 0
+  pdlist = []
+
+  for cs in contour_sequences:
+    r = findROIByNumber(ds, cs.ReferencedROINumber)
+    if len(contour_names) and not(r.ROIName in contour_names):
+      if verbose:
+        print ("Skipping ", r.ROIName)
+      i=i+1
+      continue
+    print ()
+    print("Contour Sequence:", i)
+    print("color:", cs.ROIDisplayColor)
+    print ("ROI number:", cs.ReferencedROINumber)
+    print ("ROI name:", r.ROIName)
+    print("# of contours:", len(cs.ContourSequence))
+
+    pdlist.append( contourSequence2PolyData(cs) )
+  view( pdlist )
 
 def usage():
   print ( )
@@ -82,6 +106,7 @@ def usage():
   print ( "   -l, --line     Output line files" )
   print ( "   -v, --vtk      Output VTK polyline files" )
   print ( "   -m, --meta     Output MetaIO volume images" )
+  print ( "   -d, --display  Display contours (using VTK)" )
   print ( "   -c name, --contour name     Select contour by name (multiple names allowed)" )
   print ( )
 
@@ -93,11 +118,12 @@ def parseArgs():
   cn = []
   settings['contour_names'] = cn
   settings['verbose'] = False
+  settings['display'] = False
   settings['output_type'] = 'line'
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:], "hVlvmc:",
-      ["help", "verbose", "line", "vtk", "meta", "contour="] )
+    opts, args = getopt.getopt(sys.argv[1:], "hVlvmdc:",
+      ["help", "verbose", "line", "vtk", "meta", "display", "contour="] )
   except getopt.GetoptError as err:
     print(str(err))
     usage()
@@ -116,11 +142,12 @@ def parseArgs():
       output_type = 'vtk'
       settings['output_type'] = 'vtk'
     elif o in ("-m", "--meta"):
-      print("Meta!")
       settings['output_type'] = 'meta'
       output_type = 'meta'
     elif o in ("-c", "--contour"):
       cn.append(a)
+    elif o in ("-d", "--display"):
+      settings['display'] = True
     else:
       assert False, "unhandled options"
 
@@ -146,10 +173,14 @@ def main():
     ds = pydicom.read_file(infile, force=True)
     print("output type:", output_type)
 
-    if output_type == 'meta':
-      OutputContoursAsImages(ds, contour_names, settings['verbose'])
+    if settings['display']:
+      displayContours(ds, contour_names)
     else:
-      OutputContours(ds, output_type, contour_names, settings['verbose'])
+
+      if output_type == 'meta':
+        OutputContoursAsImages(ds, contour_names, settings['verbose'])
+      else:
+        OutputContours(ds, output_type, contour_names, settings['verbose'])
 
 
 
