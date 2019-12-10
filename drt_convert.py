@@ -8,7 +8,13 @@ from drt2image import *
 
 def OutputContours(ds, output_type='line', contour_names=[], verbose=False):
 
-  contour_sequences = ds.ROIContourSequence
+  try:
+    contour_sequences = ds.ROIContourSequence
+  except:
+    print("Uh-oh: couldn't find ROIContourSequence")
+    print(dir(ds))
+    return
+
   print (len(contour_sequences), "contour sequences")
 
   i = 0
