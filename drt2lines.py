@@ -21,15 +21,10 @@ def findROIByName(ds, name):
     return None
 
 
-def contourSequence2VTK(cs=None, name="", color=[]):
-    """ output a VTK polyline file from a contour sequence """
-    out = ['# vtk DataFile Version 1.0']
-    out.append('contour sequence %s' % name)
-    out.append('ASCII')
-    out.append('DATASET POLYDATA')
+def getContourSequenceData(cs):
+    """ Get the number of points, lines, and starting indeces of each line of a contour sequence. """
 
     nlines = len(cs.ContourSequence)
-
     count = 0
     starts = []
     ncs = 0
@@ -41,6 +36,17 @@ def contourSequence2VTK(cs=None, name="", color=[]):
 
     npts = count/3
     #print(starts)
+
+    return npts, nlines, starts
+
+def contourSequence2VTK(cs=None, name="", color=[]):
+    """ output a VTK polyline file from a contour sequence """
+    out = ['# vtk DataFile Version 1.0']
+    out.append('contour sequence %s' % name)
+    out.append('ASCII')
+    out.append('DATASET POLYDATA')
+
+    npts, nlines, starts = getContourSequenceData(cs)
 
     out.append('POINTS %d float' % int(npts))
 
