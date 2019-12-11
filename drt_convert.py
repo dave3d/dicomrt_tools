@@ -36,10 +36,10 @@ def OutputContours(ds, output_type='line', contour_names=[], verbose=False):
 
     if output_type == 'line':
       outname = r.ROIName.replace(' ', '_') + ".lns"
-      out = contourSequence2LNS(cs, r.ROIName, cs.ROIDisplayColor)
+      out = contourSequence2LNS(cs, r.ROIName, cs.ROIDisplayColor, verbose)
     elif output_type == 'vtk':
       outname = r.ROIName.replace(' ', '_') + ".vtk"
-      out = contourSequence2VTK(cs, r.ROIName, cs.ROIDisplayColor)
+      out = contourSequence2VTK(cs, r.ROIName, cs.ROIDisplayColor, verbose)
 
     print(outname)
     outfile = open(outname, "w")
@@ -73,7 +73,7 @@ def OutputContoursAsImages(ds, contour_names=[], verbose=False):
 
     contourSequence2Image(cs, 'meta', r.ROIName)
 
-def displayContours(ds, contour_names=[]):
+def displayContours(ds, contour_names=[], verbose=False):
   contour_sequences = ds.ROIContourSequence
   print (len(contour_sequences), "contour sequences")
 
@@ -174,7 +174,7 @@ def main():
     print("output type:", output_type)
 
     if settings['display']:
-      displayContours(ds, contour_names)
+      displayContours(ds, contour_names, settings['verbose'])
     else:
 
       if output_type == 'meta':

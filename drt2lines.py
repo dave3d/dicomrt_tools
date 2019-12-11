@@ -39,7 +39,7 @@ def getContourSequenceData(cs):
 
     return npts, nlines, starts
 
-def contourSequence2VTK(cs=None, name="", color=[]):
+def contourSequence2VTK(cs=None, name="", color=[], verbose=False):
     """ output a VTK polyline file from a contour sequence """
     out = ['# vtk DataFile Version 1.0']
     out.append('contour sequence %s' % name)
@@ -47,6 +47,9 @@ def contourSequence2VTK(cs=None, name="", color=[]):
     out.append('DATASET POLYDATA')
 
     npts, nlines, starts = getContourSequenceData(cs)
+
+    if verbose:
+      print( "%d points, %d lines " % (npts, nlines) )
 
     out.append('POINTS %d float' % int(npts))
 
@@ -73,12 +76,14 @@ def contourSequence2VTK(cs=None, name="", color=[]):
       # close the contour by repeating the first vertex
       verts = verts + " " + str(starts[i])
       out.append(verts)
+      if verbose:
+        print("contour %d has %d points" % (i, n+1))
 
       i=i+1
     return out
 
 
-def contourSequence2LNS(cs=None, name="", color=[]):
+def contourSequence2LNS(cs=None, name="", color=[], verbose=False):
     """ output a contour in Dave's .lns format """
     out=[''] #lead with a blank line
 
@@ -87,6 +92,7 @@ def contourSequence2LNS(cs=None, name="", color=[]):
     out.append( "#color: %g %g %g" % (scale*color[0], scale*color[1], scale*color[2]) )
     out.append( "#name: %s" % (name) )
 
+    count = 0
     for c in cs.ContourSequence:
       n = len(c.ContourData)
       i = 0
@@ -94,6 +100,9 @@ def contourSequence2LNS(cs=None, name="", color=[]):
         out.append("%g %g %g" % (c.ContourData[i], c.ContourData[i+1], c.ContourData[i+2]))
       # close the contour
       out.append("%g %g %g" % (c.ContourData[0], c.ContourData[1], c.ContourData[2]))
+      if verbose:
+         print("%d points in contour %d" % (n+1, count))
+      count=count+1
 
       out.append('') # end each contour with a blank line
 
