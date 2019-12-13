@@ -38,6 +38,7 @@ def contourSequence2PolyData(cs):
     for j in range(n):
       line.GetPointIds().SetId(j, j+starts[i])
     line.GetPointIds().SetId(n, starts[i])
+    lines.InsertNextCell(line)
     i=i+1
 
   linesPolyData = vtk.vtkPolyData()
