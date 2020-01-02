@@ -1,7 +1,7 @@
 
 import vtk
 
-def view(pdlist):
+def view(pdlist, colorlist):
 
     colors = vtk.vtkNamedColors()
 
@@ -12,17 +12,27 @@ def view(pdlist):
     renderWindow.AddRenderer(renderer)
     renderWindowInteractor = vtk.vtkRenderWindowInteractor()
     renderWindowInteractor.SetRenderWindow(renderWindow)
-    renderer.SetBackground(colors.GetColor3d("DarkOliveGreen"))
+    renderer.SetBackground(colors.GetColor3d("DarkSlateBlue"))
 
+    i = 0
     for pd in pdlist:
       mapper = vtk.vtkPolyDataMapper()
       mapper.SetInputData(pd)
 
       actor = vtk.vtkActor()
       actor.SetMapper(mapper)
-      actor.GetProperty().SetColor(colors.GetColor3d("Tomato"))
+      try:
+        color = colorlist[i]
+        if len(color) < 3:
+          raise
+      except:
+        color = [1.0, 1.0, 1.0]
+      actor.GetProperty().SetColor(color)
       renderer.AddActor(actor)
 
+      i=i+1
+
+    renderWindow.SetSize(2000,1500)
     renderWindow.Render()
     renderWindowInteractor.Start()
 

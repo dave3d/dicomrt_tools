@@ -79,6 +79,7 @@ def displayContours(ds, contour_names=[], verbose=False):
 
   i = 0
   pdlist = []
+  colorlist = []
 
   for cs in contour_sequences:
     r = findROIByNumber(ds, cs.ReferencedROINumber)
@@ -95,7 +96,10 @@ def displayContours(ds, contour_names=[], verbose=False):
     print("# of contours:", len(cs.ContourSequence))
 
     pdlist.append( contourSequence2PolyData(cs) )
-  view( pdlist )
+    color = [ float(x)/255.0 for x in cs.ROIDisplayColor ]
+
+    colorlist.append( color )
+  view( pdlist, colorlist )
 
 def usage():
   print ( )
