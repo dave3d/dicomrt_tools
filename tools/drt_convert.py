@@ -1,11 +1,7 @@
 #! /usr/bin/env python
 
-import sys, getopt, os
+import sys, getopt
 import pydicom
-
-root_folder = os.path.abspath(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(root_folder)
-
 from drt2lines import *
 from drt2image import *
 from vtkview import *
