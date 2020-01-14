@@ -7,7 +7,7 @@ root_folder = os.path.abspath(os.path.dirname(os.path.dirname(os.path.abspath(__
 sys.path.append(root_folder)
 
 from drt2files import *
-from drt2image import *
+from drt2polylines import *
 from vtkview import *
 from utils import *
 
