@@ -9,7 +9,7 @@ except ImportError:
   pass
 
 
-def contourSequence2PolyData(cs):
+def contourSequence2PolyLines(cs):
 
   if not has_vtk:
     print ("Error: VTK package not found")

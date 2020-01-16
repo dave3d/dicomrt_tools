@@ -100,7 +100,7 @@ def displayContours(ds, contour_names=[], verbose=False):
     print ("ROI name:", r.ROIName)
     print("# of contours:", len(cs.ContourSequence))
 
-    pdlist.append( contourSequence2PolyData(cs) )
+    pdlist.append( contourSequence2PolyLines(cs) )
     color = [ float(x)/255.0 for x in cs.ROIDisplayColor ]
 
     colorlist.append( color )
