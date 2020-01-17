@@ -21,13 +21,13 @@ def findROIByName(ds, name):
             return r
     return None
 
-def findROIByRegex(ds, regex):
+def findROIByPattern(ds, pattern):
     """ find all the regions whos names match a regular expression"""
 
     results=[]
     roi = ds.StructureSetROISequence
     for r in roi:
-      if re.match(pattern, string):
+      if re.match(pattern, r.ROIName):
         results.append(r)
 
     return results
