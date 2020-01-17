@@ -117,6 +117,7 @@ def usage():
   print ( "   -m, --meta     Output MetaIO volume images" )
   print ( "   -d, --display  Display contours (using VTK)" )
   print ( "   -c name, --contour name     Select contour by name (multiple names allowed)" )
+  print ( "   -r 'regex'     Select contour by regular expression" )
   print ( )
 
 
@@ -129,10 +130,11 @@ def parseArgs():
   settings['verbose'] = False
   settings['display'] = False
   settings['output_type'] = 'line'
+  settings['regex'] = ""
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:], "hVlvmdc:",
-      ["help", "verbose", "line", "vtk", "meta", "display", "contour="] )
+    opts, args = getopt.getopt(sys.argv[1:], "hVlvmdc:r:",
+      ["help", "verbose", "line", "vtk", "meta", "display", "contour=", "regex="] )
   except getopt.GetoptError as err:
     print(str(err))
     usage()
@@ -155,6 +157,8 @@ def parseArgs():
       output_type = 'meta'
     elif o in ("-c", "--contour"):
       cn.append(a)
+    elif o in ("-r", "--regex"):
+      settings['regex'] = a
     elif o in ("-d", "--display"):
       settings['display'] = True
     else:
@@ -171,13 +175,13 @@ def main():
   infiles, settings = parseArgs()
 
   output_type = settings['output_type']
-  contour_names = settings['contour_names']
 
   if len(infiles) == 0:
     infiles = ["1041312_StrctrSets.dcm"]
   print (infiles)
   for infile in infiles:
     print(infile)
+    contour_names = settings['contour_names']
 
     ds = pydicom.read_file(infile, force=True)
     print("output type:", output_type)

@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import re
 import pydicom
 
 def findROIByNumber(ds, num):
@@ -19,6 +20,17 @@ def findROIByName(ds, name):
         if r.ROIName == name:
             return r
     return None
+
+def findROIByRegex(ds, regex):
+    """ find all the regions whos names match a regular expression"""
+
+    results=[]
+    roi = ds.StructureSetROISequence
+    for r in roi:
+      if re.match(pattern, string):
+        results.append(r)
+
+    return results
 
 
 def getContourSequenceData(cs):
