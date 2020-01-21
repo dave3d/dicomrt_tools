@@ -57,6 +57,14 @@ def findRegions(ds, numbers=[], names=[], pattern=""):
 
     return results
 
+def getContourSequenceFromRegion(ds, region):
+    """ Given a region, return its contour sequence """
+    contour_sequences = ds.ROIContourSequence
+    for cs in contour_sequences:
+        if cs.ReferencedROINumber == region.ROINumber:
+            return cs
+
+
 def getContourSequenceData(cs):
     """ Get the number of points, lines, and starting indeces of each line of a contour sequence. """
 
