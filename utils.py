@@ -22,7 +22,7 @@ def findROIByName(ds, name):
     return None
 
 def findROIByPattern(ds, pattern):
-    """ find all the regions whos names match a regular expression"""
+    """ find all the regions whos names match a regular expression """
 
     results=[]
     roi = ds.StructureSetROISequence
@@ -32,6 +32,30 @@ def findROIByPattern(ds, pattern):
 
     return results
 
+def findRegions(ds, numbers=[], names=[], pattern=""):
+    """ find all the regions by numbers, names or regular expressions """
+
+    # if they passed in a string, convert it to a list
+    if type(names)==str:
+        names=[names]
+
+    roi = ds.StructureSetROISequence
+    results = []
+
+    for r in roi:
+        if len(pattern):
+            if re.match(pattern, r.ROIName):
+                results.append(r)
+                continue
+        if len(numbers):
+            if r.ROINumber in numbers:
+                results.append(r)
+                continue
+        if len(names):
+            if r.ROIName in names:
+                results.append(r)
+
+    return results
 
 def getContourSequenceData(cs):
     """ Get the number of points, lines, and starting indeces of each line of a contour sequence. """
