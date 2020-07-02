@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import re
-import pydicom
+
 
 def findROIByNumber(ds, num):
     """ find a ROI by its ID number """
@@ -12,6 +12,7 @@ def findROIByNumber(ds, num):
             return r
     return None
 
+
 def findROIByName(ds, name):
     """ find a ROI by its name """
     roi = ds.StructureSetROISequence
@@ -21,23 +22,25 @@ def findROIByName(ds, name):
             return r
     return None
 
+
 def findROIByPattern(ds, pattern):
     """ find all the regions whos names match a regular expression """
 
-    results=[]
+    results = []
     roi = ds.StructureSetROISequence
     for r in roi:
-      if re.match(pattern, r.ROIName):
-        results.append(r)
+        if re.match(pattern, r.ROIName):
+            results.append(r)
 
     return results
+
 
 def findRegions(ds, numbers=[], names=[], pattern=""):
     """ find all the regions by numbers, names or regular expressions """
 
     # if they passed in a string, convert it to a list
-    if type(names)==str:
-        names=[names]
+    if type(names) == str:
+        names = [names]
 
     roi = ds.StructureSetROISequence
     results = []
@@ -57,6 +60,7 @@ def findRegions(ds, numbers=[], names=[], pattern=""):
 
     return results
 
+
 def getContourSequenceFromRegion(ds, region):
     """ Given a region, return its contour sequence """
     contour_sequences = ds.ROIContourSequence
@@ -66,7 +70,8 @@ def getContourSequenceFromRegion(ds, region):
 
 
 def getContourSequenceData(cs):
-    """ Get the number of points, lines, and starting indeces of each line of a contour sequence. """
+    """ Get the number of points, lines, and starting indeces of each line
+    of a contour sequence. """
 
     nlines = len(cs.ContourSequence)
     count = 0
@@ -74,12 +79,11 @@ def getContourSequenceData(cs):
     ncs = 0
     # Count up all the points in all the contours
     for c in cs.ContourSequence:
-      starts.append(int(count/3))
-      count = count + len(c.ContourData)
-      ncs = ncs + 1
+        starts.append(int(count / 3))
+        count = count + len(c.ContourData)
+        ncs = ncs + 1
 
-    npts = count/3
-    #print(starts)
+    npts = count / 3
+    # print(starts)
 
     return npts, nlines, starts
-

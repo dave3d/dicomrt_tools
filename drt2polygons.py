@@ -1,18 +1,17 @@
 
+import drt2polylines
 
 has_vtk = False
 try:
-  import vtk
-  has_vtk=True
+    import vtk
+
+    has_vtk = True
 except ImportError:
-  pass
-
-from drt2polylines import *
+    pass
 
 
-def  contourSequence2Polygons(cs):
-
-    linesPolyData = contourSequence2PolyLines(cs)
+def contourSequence2Polygons(cs):
+    linesPolyData = drt2polylines.contourSequence2PolyLines(cs)
 
     f = vtk.vtkVoxelContoursToSurfaceFilter()
 
