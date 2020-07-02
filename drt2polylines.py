@@ -10,6 +10,7 @@ except ImportError:
 
 
 def contourSequence2PolyLines(cs):
+  """ Create a set of VTK polylines from a contour sequence """
 
   if not has_vtk:
     print ("Error: VTK package not found")
