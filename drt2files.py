@@ -10,7 +10,7 @@ def contourSequence2VTK(cs=None, name="", color=[], verbose=False):
     out.append('ASCII')
     out.append('DATASET POLYDATA')
 
-    npts, nlines, starts = getContourSequenceData(cs)
+    npts, nlines, starts = utils.getContourSequenceData(cs)
 
     if verbose:
       print( "%d points, %d lines " % (npts, nlines) )
