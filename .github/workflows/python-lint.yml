@@ -2,9 +2,9 @@ name: Python Lint
 
 on:
   push:
-    branches: [ master, release ]
+    branches: [ main ]
   pull_request:
-    branches: [ master, release ]
+    branches: [ main ]
 
 jobs:
   build:
