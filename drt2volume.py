@@ -33,4 +33,5 @@ def contourSequence2Volume(cs, spacing=[1, 1, 1]):
     sten2img.SetInsideValue(255)
     sten2img.Update()
     vtkimg = sten2img.GetOutput()
+    vtkimg.SetOrigin(bounds2[0:3])
     return vtkimg
