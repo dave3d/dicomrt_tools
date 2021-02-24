@@ -3,12 +3,13 @@ import sys
 import vtk
 import traceback
 
-def writeVTKMesh(mesh, name):
+def writeVTKMesh(mesh, name, binary=True):
     """Write a VTK mesh file."""
     try:
         writer = vtk.vtkPolyDataWriter()
         writer.SetInputData(mesh)
-        writer.SetFileTypeToBinary()
+        if binary:
+            writer.SetFileTypeToBinary()
         writer.SetFileName(name)
         writer.Write()
         print("Output mesh:", name)
