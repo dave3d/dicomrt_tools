@@ -1,6 +1,7 @@
 
 import sys
 import vtk
+import traceback
 
 def writeVTKMesh(mesh, name):
     """Write a VTK mesh file."""
