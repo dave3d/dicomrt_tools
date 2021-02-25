@@ -52,10 +52,14 @@ def contourSequence2LNS(cs=None, name="", color=[], verbose=False):
     """ output a contour in Dave's .lns format """
     out = ['']  # lead with a blank line
 
+    bound_min = [1e32, 1e32, 1e32]
+    bound_max = [-1e32, -1e32, -1e32]
+
     # convert 0-255 colors to 0-1.0
-    scale = 1.0 / 255.0
-    out.append("#color: %g %g %g" % (scale * color[0], scale * color[1],
-                                     scale * color[2]))
+    if len(color) == 3:
+        scale = 1.0 / 255.0
+        out.append("#color: %g %g %g" % (scale * color[0], scale * color[1],
+                                         scale * color[2]))
     out.append("#name: %s" % (name))
 
     count = 0
@@ -63,8 +67,14 @@ def contourSequence2LNS(cs=None, name="", color=[], verbose=False):
         n = len(c.ContourData)
         i = 0
         for i in range(0, n, 3):
-            out.append("%g %g %g" % (c.ContourData[i], c.ContourData[i + 1],
-                                     c.ContourData[i + 2]))
+            pt = [c.ContourData[i], c.ContourData[i + 1], c.ContourData[i + 2]]
+            out.append("%g %g %g" % (pt[0], pt[1], pt[2]))
+            for j in range(3):
+                if pt[j] < bound_min[j]:
+                    bound_min[j] = pt[j]
+                if pt[j] > bound_max[j]:
+                    bound_max[j] = pt[j]
+
         # close the contour
         out.append("%g %g %g" % (c.ContourData[0], c.ContourData[1],
                                  c.ContourData[2]))
@@ -73,5 +83,9 @@ def contourSequence2LNS(cs=None, name="", color=[], verbose=False):
         count = count + 1
 
         out.append('')  # end each contour with a blank line
+
+    print("Contour bounds")
+    print("    min: ", bound_min[0], bound_min[1], bound_min[2])
+    print("    max: ", bound_max[0], bound_max[1], bound_max[2])
 
     return out
