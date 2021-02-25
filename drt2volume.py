@@ -11,6 +11,7 @@ def contourSequence2Volume(cs, spacing=[1, 1, 1]):
     stencil.SetInputData(polylines)
 
     bounds = polylines.GetBounds()
+    print("Polyline bounds: ", bounds)
     i = 0
     bounds2 = []
     for x in bounds:
@@ -21,6 +22,7 @@ def contourSequence2Volume(cs, spacing=[1, 1, 1]):
         bounds2.append(y)
         i = i + 1
 
+    print("Volume bounds: ", bounds2)
     stencil.SetOutputWholeExtent(bounds2[0], bounds2[1], bounds2[2],
                                  bounds2[3], bounds2[4], bounds2[5])
 
@@ -33,5 +35,8 @@ def contourSequence2Volume(cs, spacing=[1, 1, 1]):
     sten2img.SetInsideValue(255)
     sten2img.Update()
     vtkimg = sten2img.GetOutput()
-    vtkimg.SetOrigin(bounds2[0:3])
+
+    bmin = bounds2[::2]
+    print("Volume min: ", bmin)
+    vtkimg.SetOrigin(bmin)
     return vtkimg
